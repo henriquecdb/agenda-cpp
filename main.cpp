@@ -1,102 +1,62 @@
 #include <iostream>
-#include <vector>
-#include <fstream>
-#include <string>
-#include <iomanip>
-#include <algorithm>
+#include "agenda.h"
 
 using namespace std;
-
-class Person
-{
-public:
-    string name;
-    string email;
-    string phone;
-    string birthday;
-
-    Person(string _name, string _email, string _phone, string _birthday)
-    {
-        this->name = _name;
-        this->email = _email;
-        this->phone = _phone;
-        this->birthday = _birthday;
-    }
-
-    bool operator<(Person B)
-    {
-        return this->name < B.name;
-    }
-};
-
-class Agenda
-{
-public:
-    vector<Person> contacts;
-
-    void load_contacts(string filename)
-    {
-        ifstream input(filename);
-
-        string line;
-        while (getline(input, line))
-        {
-            vector<string> words;
-            words.clear();
-            string tmp = "";
-            for (int i = 0; i < line.size(); i++)
-            {
-                if (line[i] == ',')
-                {
-                    words.push_back(tmp);
-                    tmp = "";
-                } 
-                else
-                {
-                    tmp += line[i];
-                }
-            }
-
-            if (tmp.size() > 0)
-            {
-                words.push_back(tmp);
-            }
-
-            contacts.push_back(Person(words[0], words[1], words[2], words[3]));
-        }
-    }
-
-    void sort_contacts()
-    {
-        sort(contacts.begin(), contacts.end());
-    }
-
-    void print_contacts()
-    {
-        cout << "----------------------------------" << endl;
-        cout << "Name"
-             << "\t\t"
-             << "Email"
-             << "\t\t\t"
-             << "Phone"
-             << "\t\t\t"
-             << "Birthday" << endl;
-        for (int i = 0; i < contacts.size(); i++)
-        {
-            cout << contacts[i].name << "\t" 
-                 << contacts[i].email << "\t" 
-                 << contacts[i].phone << "\t\t" 
-                 << contacts[i].birthday << endl;
-        }
-    }
-};
 
 int main()
 {
     Agenda agenda;
-    agenda.load_contacts("contacts.csv");
-    agenda.sort_contacts();
-    agenda.print_contacts();
+
+    agenda.load("contacts.csv");
+
+    int operation = -1;
+    string contact, name, email, phone, birthday;
+
+    while (operation != 6)
+    {
+        cout << "Contact Book" << endl;
+        cout << "What would you like to do?" << endl;
+
+        cout << "1 - List Contacts" << endl;
+        cout << "2 - Detail Contacts" << endl;
+        cout << "3 - Add Contacts" << endl;
+        cout << "4 - Remove Contacts" << endl;
+        cout << "5 - Save" << endl;
+        cout << "6 - Quit" << endl;
+
+        cin >> operation;
+
+        switch (operation)
+        {
+        case 1:
+            agenda.sort_contacts();
+            agenda.print();
+            break;
+        case 2:
+            cout << "Enter the name of the contact you want to detail." << endl;
+            cin >> contact;
+            agenda.detail(contact);
+            break;
+        case 3:
+            cout << "Enter the information in the following order: name, email, phone, date of birth." << endl;
+            cin >> name >> email >> phone >> birthday;
+            agenda.contacts.push_back(Person(name, email, phone, birthday));
+            break;
+        case 4:
+            cout << "Enter the name of the contact you want to remove." << endl;
+            cin >> contact;
+            agenda.remove(contact);
+            break;
+        case 5:
+            agenda.save();
+            cout << "Saved Changes" << endl;
+            break;
+        case 6:
+            break;
+        default:
+            break;
+        }
+    }
 
     return 0;
 }
